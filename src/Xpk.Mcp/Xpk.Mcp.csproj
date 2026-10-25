@@ -7,4 +7,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Xpk.Core\Xpk.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="2.3.0" />
+  </ItemGroup>
 </Project>
