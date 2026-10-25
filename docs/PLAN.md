@@ -205,33 +205,33 @@ Zonder `--apply` is elke schrijfopdracht een proefdraai.
 
 **Doel.** Bewijzen dat RaceBits zonder het scherm van XPacker een XPack kan openen, één eigenschap kan wijzigen en kan opslaan, en dat XPacker het resultaat foutloos opent. Werk altijd op een **kopie** van een XPack. Inschatting: 1 tot 2 sessies.
 
-- [ ] **0.1 Omgeving**
+- [x] **0.1 Omgeving**
   - Installeer de .NET 8 SDK (`winget install Microsoft.DotNet.SDK.8`), Git for Windows en Claude Code.
   - Draai `_FbxDedupePatch\herstel.bat`. Controleer daarna dat de SHA-256 van RaceBits.dll begint met `3d9105bb`.
   - Maak `C:\dev\xpk` aan, met `git init`, `Directory.Build.props` en een lege solution met de drie projecten.
   - Controle: `dotnet build` slaagt.
-- [ ] **0.2 RtbEnvironment**
+- [x] **0.2 RtbEnvironment**
   - `RtbEnvironment.Initialize(XpkConfig cfg)` regelt het laden: `AssemblyResolve` alleen voor RTB-assemblies, `SetDllDirectory(cfg.RtbDir)`, een headless D3D11-device en `Globals.Initialize(device, rtbDir, Documenten\Race Track Builder)`.
   - Properties: `RaceBitsVersion`, `RaceBitsSha256`, `XPacksDirs`.
   - Test `Initialize_LoadsRaceBits_ReportsOriginalHash`: de SHA-256 begint met `3d9105bb`.
-- [ ] **0.3 Openen, wijzigen, opslaan**
+- [x] **0.3 Openen, wijzigen, opslaan**
   - Tijdelijk commando `xpk spike <xpackmap>`.
   - Open de XPack in de volgorde van XPacker: `new XPack(path)`, `LoadFromFolder`, `VerifyAndSetReferences` en `FillEmptyDefaultListsFromAllItems`. Toon de aantallen.
   - Verhoog `LODOut` van één object met 1 en roep `CreateObject(obj, false)` aan.
   - Leg de diff van de XML-bestanden vast, ook van een `CreateObject` zonder wijziging (round-trip).
-- [ ] **0.4 Waar staan de XPacks?** Bepaal welke map XPacker gebruikt bij openen en welke `ZipTo` als doel krijgt. Kandidaten zijn `Globals.ApplicationsXPacksFolder` en `Documenten\Race Track Builder`.
-- [ ] **0.5 MCP SDK op net48**
+- [x] **0.4 Waar staan de XPacks?** Bepaal welke map XPacker gebruikt bij openen en welke `ZipTo` als doel krijgt. Kandidaten zijn `Globals.ApplicationsXPacksFolder` en `Documenten\Race Track Builder`.
+- [x] **0.5 MCP SDK op net48**
   - Een hello-tool met het pakket `ModelContextProtocol` (stdio).
   - Registreer met `claude mcp add --transport stdio xpk-hello -- C:\dev\xpk\out\xpk.exe serve`.
   - Roep de tool aan vanuit Claude Code.
   - Lukt het niet, dan gaat de keuze naar een eigen minimale JSON-RPC-lus.
-- [ ] **0.6 Verkenning voor latere fases**, zonder scherm testen:
+- [x] **0.6 Verkenning voor latere fases**, zonder scherm testen:
   - `ImportFBX` met een klein FBX-bestand
   - `ZipTo` naar een tijdelijke map
   - `CreateMaterialIconFile`
   - of object-iconen uit RaceBits komen of uit XPacker zelf
   - de laadtijd en het geheugengebruik van je grootste XPack
-- [ ] **0.7 Vastleggen**
+- [x] **0.7 Vastleggen**
   - In `docs/racebits-api.md`: aanroepen, volgorde, betekenis van parameters, threading en valkuilen.
   - In `docs/xpack-format.md`: mappen, welke bestanden bij een object, materiaal en String Object horen, en waar de mesh-data staat.
 
@@ -239,6 +239,9 @@ Zonder `--apply` is elke schrijfopdracht een proefdraai.
 
 - **Werkmap.** De repo en de werkkopie staan in `C:\Users\Moor\xpk` (niet `C:\dev\xpk` en `C:\dev\xpk-work`). Werkkopie: `C:\Users\Moor\xpk\NewXPackTest` plus de export `NewXPackTest.zip`. Beide staan in `.gitignore`. Repo: github.com/sd-by-ct/XPacker-MCP.
 - **.NET SDK.** Geïnstalleerd is SDK 10.0.403 in plaats van 8. Die bouwt net48 met `Microsoft.NETFramework.ReferenceAssemblies` net zo goed; er is geen reden om 8 erbij te zetten.
+- **XPacker-map.** De bron-XPacks staan niet in `Documenten\Race Track Builder`, maar in de map die XPacker als instelling `XPacksFolder` bewaart: `OneDrive\Documenten\Race Track Builder XPacker`. RTB leest de zips uit `Documenten\Race Track Builder\XPacks`. Zie `racebits-api.md`, "Waar staan de XPacks?".
+- **Tijdelijke code.** `xpk spike` (Core: `Spike\SpikeRunner`) en de MCP-tool `hello` zijn tijdelijk en verdwijnen in fase 1 en 3.
+- **Nieuw voor fase 1** (uit de verkenning): RaceBits-aanroepen bewaken met een time-out, want een fout kan een modale MessageBox openen die `serve` blokkeert. Paden boven 260 tekens netjes weigeren.
 - **RaceBits-versie.** RTB staat in Steam op de beta-branch `v1950` (build 25819081, RTB v1.9.5.6, bijgewerkt op 23 okt). De bijbehorende officiële RaceBits.dll heeft SHA-256 `944c3fe8…` en is **niet** gepatcht (hij verwijst niet naar RTBImportDedupe). `_FbxDedupePatch\RaceBits.original.dll` (`3d9105bb…`) is het origineel van de **v2000 beta**, de versie waarop dit plan en de eerdere analyse gebaseerd zijn. `herstel.bat` zou dus een v2000-DLL naast een v1950-RTB zetten en moet niet gedraaid worden. Test 0.2 verwacht daarom de hash van de geïnstalleerde DLL (`944c3fe8`). Zie `docs/racebits-api.md` voor de API-verschillen en de gevolgen.
 
 **Go/no-go**
