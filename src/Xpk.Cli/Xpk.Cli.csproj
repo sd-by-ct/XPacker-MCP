@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>xpk</AssemblyName>
+    <RootNamespace>Xpk.Cli</RootNamespace>
+    <OutDir>$(RepoRoot)out\</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xpk.Core\Xpk.Core.csproj" />
+    <ProjectReference Include="..\Xpk.Mcp\Xpk.Mcp.csproj" />
+  </ItemGroup>
+</Project>

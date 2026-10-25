@@ -6,7 +6,7 @@ CLI + MCP-server (`xpk serve`). Plan: docs/PLAN.md. Bevindingen: docs/racebits-a
 ## Harde regels
 - Nooit schrijven in C:\Program Files (x86)\Steam\steamapps\common\Race Track Builder.
 - RTB-DLL's nooit kopiëren naar out/ en nooit committen. References via HintPath + <Private>false</Private>.
-- Alleen werken op kopieën: C:\dev\xpk-work\ of tests/Fixtures/work/. Nooit op tests/Fixtures/source/.
+- Alleen werken op kopieën: C:\Users\Moor\xpk\ of tests/Fixtures/work/. Nooit op tests/Fixtures/source/.
 - Geen gedecompileerde RTB-code in de repo.
 - In `serve`-modus komt niets op stdout behalve MCP-berichten.
 - Getallen altijd met CultureInfo.InvariantCulture.

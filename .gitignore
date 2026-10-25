@@ -1,0 +1,19 @@
+bin/
+obj/
+out/
+.vs/
+*.user
+TestResults/
+
+# Werkkopieën van XPacks en exports: nooit committen
+tests/Fixtures/work/
+NewXPackTest/
+*.zip
+
+# RTB-bestanden mogen nooit in de repo komen
+RaceBits*.dll
+RaceFbx.dll
+FbxWrapper.dll
+RTBPlugins.dll
+SharpDX*.dll
+libfbxsdk.dll

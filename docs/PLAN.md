@@ -235,6 +235,12 @@ Zonder `--apply` is elke schrijfopdracht een proefdraai.
   - In `docs/racebits-api.md`: aanroepen, volgorde, betekenis van parameters, threading en valkuilen.
   - In `docs/xpack-format.md`: mappen, welke bestanden bij een object, materiaal en String Object horen, en waar de mesh-data staat.
 
+**Afwijkingen in fase 0** (besloten tijdens de uitvoering, 25 okt 2026)
+
+- **Werkmap.** De repo en de werkkopie staan in `C:\Users\Moor\xpk` (niet `C:\dev\xpk` en `C:\dev\xpk-work`). Werkkopie: `C:\Users\Moor\xpk\NewXPackTest` plus de export `NewXPackTest.zip`. Beide staan in `.gitignore`. Repo: github.com/sd-by-ct/XPacker-MCP.
+- **.NET SDK.** Geïnstalleerd is SDK 10.0.403 in plaats van 8. Die bouwt net48 met `Microsoft.NETFramework.ReferenceAssemblies` net zo goed; er is geen reden om 8 erbij te zetten.
+- **RaceBits-versie.** RTB staat in Steam op de beta-branch `v1950` (build 25819081, RTB v1.9.5.6, bijgewerkt op 23 okt). De bijbehorende officiële RaceBits.dll heeft SHA-256 `944c3fe8…` en is **niet** gepatcht (hij verwijst niet naar RTBImportDedupe). `_FbxDedupePatch\RaceBits.original.dll` (`3d9105bb…`) is het origineel van de **v2000 beta**, de versie waarop dit plan en de eerdere analyse gebaseerd zijn. `herstel.bat` zou dus een v2000-DLL naast een v1950-RTB zetten en moet niet gedraaid worden. Test 0.2 verwacht daarom de hash van de geïnstalleerde DLL (`944c3fe8`). Zie `docs/racebits-api.md` voor de API-verschillen en de gevolgen.
+
 **Go/no-go**
 
 | Uitkomst | Voorwaarde | Vervolg |

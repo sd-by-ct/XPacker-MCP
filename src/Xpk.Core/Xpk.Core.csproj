@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Xpk.Core</RootNamespace>
+  </PropertyGroup>
+
+  <!-- RTB assemblies: referenced from the RTB folder, never copied (Private=false). Loaded at runtime by RtbEnvironment. -->
+  <ItemGroup>
+    <Reference Include="RaceBits">
+      <HintPath>$(RtbDir)RaceBits.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>$(RtbDir)SharpDX.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>$(RtbDir)SharpDX.Direct3D11.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>$(RtbDir)SharpDX.DXGI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
