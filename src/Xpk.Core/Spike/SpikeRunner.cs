@@ -71,6 +71,21 @@ namespace Xpk.Core.Spike
 
         public float GetLodOut(string objectName) => FindObject(objectName).LODOut;
 
+        /// <summary>The object's scalar properties and mesh size as invariant strings, for semantic round-trip checks.</summary>
+        public string[] ObjectValues(string objectName)
+        {
+            var obj = FindObject(objectName);
+            var values = typeof(RaceBits.BObject).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.GetIndexParameters().Length == 0
+                            && (p.PropertyType.IsPrimitive || p.PropertyType.IsEnum || p.PropertyType == typeof(string)))
+                .OrderBy(p => p.Name, StringComparer.Ordinal)
+                .Select(p => p.Name + "=" + Convert.ToString(p.GetValue(obj, null), CultureInfo.InvariantCulture))
+                .ToList();
+            values.Add("PolyLists=" + obj.PolyLists.Count);
+            values.Add("HierarcyTemplate=" + obj.HierarcyTemplate.Count);
+            return values.ToArray();
+        }
+
         /// <summary>Full path of the object's XML file, for backups.</summary>
         public string ObjectXmlPath(string objectName)
         {

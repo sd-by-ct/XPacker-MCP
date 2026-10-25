@@ -9,8 +9,8 @@ namespace Xpk.Tests.Integration
     [Trait("Category", "Integration")]
     public class RtbEnvironmentTests
     {
-        // Installed RaceBits.dll: Steam branch v1950, RTB v1.9.5.6 (see docs/PLAN.md, "Afwijkingen in fase 0").
-        private const string InstalledRaceBitsSha256Prefix = "944c3fe8";
+        // Installed RaceBits.dll: Steam branch v2000, build 26041913, RTB v2.0.0.0 (see docs/PLAN.md, "Afwijkingen in fase 0").
+        private const string InstalledRaceBitsSha256Prefix = "611efe14";
 
         [Fact]
         public void Initialize_LoadsRaceBits_ReportsInstalledHash()

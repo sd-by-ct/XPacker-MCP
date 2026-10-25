@@ -1,43 +1,41 @@
 # RaceBits-API: bevindingen fase 0
 
-Vastgelegd op 25 okt 2026, op basis van experimenten met de geïnstalleerde RaceBits.dll en reflectie op de openbare API (alleen namen en signaturen, geen gedecompileerde code). De experimenten zijn gedaan op kopieën: de werkkopie `C:\Users\Moor\xpk\NewXPackTest` (met backup) en kopieën in `tests\Fixtures\work\`. Voor en na elke run is gecontroleerd dat de RTB-map en `Documenten\Race Track Builder` niet zijn veranderd.
+Vastgelegd op 25 okt 2026, op basis van experimenten met RaceBits.dll van v1950 en daarna van v2.0 (de doelversie) en reflectie op de openbare API (alleen namen en signaturen, geen gedecompileerde code). De experimenten zijn gedaan op kopieën: de werkkopie `C:\Users\Moor\xpk\NewXPackTest` (met backup) en kopieën in `tests\Fixtures\work\`. Voor en na elke run is gecontroleerd dat de RTB-map en `Documenten\Race Track Builder` niet zijn veranderd.
 
-## Go/no-go-advies
+## Go/no-go-conclusie
 
-**Advies: GO, route A (RaceBits zonder scherm).** Definitief zodra jij de acceptatie in XPacker hebt gedaan (zie onderaan).
+**GO, route A (RaceBits zonder scherm), met RTB v2.0 als doel.** Besloten op 25 okt 2026, na de acceptatie door Jeroen: XPacker toont bij Billboards_L_1 LOD Out 2001, en alle andere objecten zijn ongewijzigd.
 
 | Voorwaarde uit het plan | Uitkomst |
 | --- | --- |
-| RaceBits laadt zonder venster | Ja. `Globals.Initialize` met een headless D3D11-device (`DriverType.Hardware`, feature level 11_0) in 0,4 s. Een onzichtbaar WinForms-venster (route A2) is niet nodig. |
-| XPack openen in de volgorde van XPacker | Ja. NewXPackTest in 0,2 s, de grootste eigen XPack (70 objecten, 381 materialen) in 5,6 s koud en 1,1 s warm. |
-| `LODOut` + 1 en `CreateObject(obj, false)` | Ja. Precies één regel in één bestand verandert: `<LODOut>2000</LODOut>` wordt `<LODOut>2001</LODOut>` in `Objects\Billboards_L_1.xml`. Na opnieuw openen leest RaceBits 2001. |
-| Geen onverwachte wijzigingen | Ja voor objecten en String Objects: round-trip is byte-identiek. **Nee voor materialen** bij een XPack die met v2000 is gemaakt (zie "Twee RaceBits-versies"). |
-| XPacker toont de nieuwe LODOut | Nog door jou te controleren. |
+| RaceBits laadt zonder venster | Ja, op v1950 en op v2.0. `Globals.Initialize` met een headless D3D11-device (`DriverType.Hardware`, feature level 11_0) in 0,4 s. Een onzichtbaar WinForms-venster (route A2) is niet nodig. |
+| XPack openen in de volgorde van XPacker | Ja. NewXPackTest in 0,2 s. De grootste eigen XPack (70 objecten, 381 materialen) in 1,4 s op v2.0 (v1950: 5,6 s koud, 1,1 s warm). |
+| `LODOut` + 1 en `CreateObject(obj, false)` | Ja. Ten opzichte van een eenmaal opgeslagen versie verandert precies één regel in één bestand: `<LODOut>2000</LODOut>` wordt `<LODOut>2001</LODOut>`. Na opnieuw openen leest RaceBits 2001. |
+| Geen onverwachte wijzigingen | Ja, op v2.0. De eerste keer opslaan normaliseert (standaardwaarden vallen weg, ontbrekende velden komen erbij); er gaat niets verloren en daarna is opslaan idempotent. Zie "Opslaan". |
+| XPacker toont de nieuwe LODOut | Ja (acceptatie, gedaan op de v1950-werkkopie). |
 
-Twee punten moet je beslissen of weten voordat fase 2 begint:
+Aandachtspunt voor fase 1: **een RaceBits-fout kan een modale dialoog openen** (MessageBox). In `serve`-modus blokkeert dat de server. Daarom komt er een bewaking: elke RaceBits-aanroep krijgt een time-out, en dialogen worden automatisch gesloten of voorkomen.
 
-1. **Welke RTB-branch is het doel: v1950 of v2000?** Met v1950 verliest `CreateMaterialXML` de velden `rf_*` en `GrassFX_*` die v2000 heeft geschreven. Lezen en objecten werken met allebei.
-2. **Een RaceBits-fout kan een modale dialoog openen** (MessageBox). In `serve`-modus blokkeert dat de server. Fase 1 krijgt daarom een bewaking: elke RaceBits-aanroep met een time-out, en dialogen automatisch sluiten of voorkomen.
+## RaceBits-versies
 
-## Twee RaceBits-versies
+| | **v2.0 (doel, geïnstalleerd)** | v2000 eerder (`_FbxDedupePatch\RaceBits.original.dll`) | v1950 (eerder geïnstalleerd) |
+| --- | --- | --- | --- |
+| Steam-branch | `v2000`, build 26041913, RTB v2.0.0.0 | `v2000` beta, oudere build | `v1950`, build 25819081, RTB v1.9.5.6 |
+| SHA-256 | `611efe142ff387bc17a6f0eb9c236d7d426a21b8f7c3fce2ce01c275a43694ff` | `3d9105bbe55b2c8de3ea2d87082a326c1677c2f53603cf896c4e581b88d26e24` | `944c3fe8fe825af1944b2649884966393233c60ed9d8e33c54a8d70add340f0a` |
+| Grootte | 1 488 896 bytes | 1 488 896 bytes | 920 064 bytes |
+| Gepatcht? | Nee | Nee (back-up van vóór de patch) | Nee |
 
-| | Geïnstalleerd nu | `_FbxDedupePatch\RaceBits.original.dll` |
-| --- | --- | --- |
-| Steam-branch | `v1950` (build 25819081, RTB v1.9.5.6, 23 okt) | `v2000` beta |
-| SHA-256 | `944c3fe8fe825af1944b2649884966393233c60ed9d8e33c54a8d70add340f0a` | `3d9105bbe55b2c8de3ea2d87082a326c1677c2f53603cf896c4e581b88d26e24` |
-| Grootte | 920 064 bytes | 1 488 896 bytes |
-| Gepatcht? | Nee (geen verwijzing naar RTBImportDedupe) | Nee (back-up van vóór de patch) |
-| FileVersion | 1.0.0.0 | 1.0.0.0 |
+- De FileVersion is altijd 1.0.0.0. Alleen de hash identificeert een build, en dat is wat VersionGuard moet gebruiken. `611efe14` is de eerste bekende hash.
+- `611efe14` en `3d9105bb` hebben precies dezelfde openbare API (3999 members, 0 verschillen) en verschillen in 53 bytes: dezelfde code, opnieuw gebouwd. `herstel.bat` zet dus een oudere build terug en is niet meer nodig.
+- RTB v2.1 komt eraan. Na die update is RaceBits alleen-lezen tot de integratietests groen zijn (plan, 7.4).
 
-De FileVersion is altijd 1.0.0.0. Alleen de hash identificeert een build, en dat is wat VersionGuard moet gebruiken.
-
-`herstel.bat` kopieert de v2000-DLL over de v1950-DLL. Dan staat een v2000-RaceBits naast een v1950-RTB en een v1950-XPacker. **Niet doen** zolang Steam op v1950 staat.
-
-**API-verschillen die ertoe doen** (v2000 → v1950):
+**API-verschillen v2.0 → v1950** (ter info; v1950 wordt niet ondersteund):
 
 - Ontbreekt in v1950: `XPack.FillEmptyDefaultListsFromAllItems()`, `XPack.DefaultObjects/DefaultSObjects/DefaultWalls/DefaultDecals/DefaultTracks`, `Mat.GetMissingRequiredTextures()`, `Mat.GetRequiredTextureMaps()`, `Mat.SupportsAC` en verwanten, de velden `Mat.GrassFX_*`, `Mat.rf_Specular/rf_Roughness/rf_NormalIntensity/rf_AlbedoTint`, `Mat.TexMap7–9`, `Mat.Perlin*`.
 - Nieuw in v1950: `Globals.UserXPacksFolder`, `XPack.IsOldBTBPack`, `XPack.SetIsThemePackFlag()`, `Mat.rF_DoubleSided`, `BObject.FacesWarning(ref string)`.
-- Gevolg voor het plan: regel `material-required-texture-missing` (fase 4) bestaat niet op v1950. `FillEmptyDefaultListsFromAllItems` wordt via reflectie aangeroepen als hij bestaat.
+- Andere signatuur: `XPack.VerifyCrossSections(XPacks, List<string>)` in v2.0, `VerifyCrossSections(List<string>)` in v1950.
+- Op v1950 verliest `CreateMaterialXML` de velden `rf_*` en `GrassFX_*` van een XPack die met v2.0 is gemaakt. Dat was de reden om v2.0 als doel te kiezen.
+- `Xpk.Core` roept `FillEmptyDefaultListsFromAllItems` en `Globals.UserXPacksFolder` via reflectie aan, zodat de spike op beide versies draait. Vanaf fase 1 mag de code direct tegen v2.0 programmeren.
 
 ## Starten
 
@@ -50,7 +48,7 @@ RaceBits.Globals.Initialize(device, applicationFolder, projectsFolder)
 
 - `applicationFolder` = de RTB-map. `Globals.ApplicationsXPacksFolder` wordt dan `<RTB>\XPacks`, een map die niet bestaat (de meegeleverde themes staan in `<RTB>\Themes`).
 - `projectsFolder` = `Documenten\Race Track Builder`. Gebruik `Environment.SpecialFolder.MyDocuments`; die volgt de OneDrive-omleiding (`C:\Users\Moor\OneDrive\Documenten`).
-- `Globals.UserXPacksFolder` (alleen v1950) komt uit Mijn documenten, **niet** uit `projectsFolder`. Ook met een andere `projectsFolder` bleef hij `OneDrive\Documenten\Race Track Builder\XPacks`.
+- v2.0 heeft geen `Globals.UserXPacksFolder`. De zip-map is `<projectsFolder>\XPacks` (`RtbEnvironment.XPacksDirs`). In v1950 kwam `UserXPacksFolder` uit Mijn documenten, niet uit `projectsFolder`.
 - `Initialize` en het openen schrijven niets in de RTB-map of in Documenten (gecontroleerd met momentopnames). De Serilog-logger van RaceBits is niet geconfigureerd en schrijft dus niets. `Log.txt` in de RTB-map komt van RTB en XPacker zelf.
 - In de AssemblyResolve-handler moet je een assembly die al geladen is teruggeven. Een PowerShell-scriptblock als handler geeft een StackOverflow; schrijf hem in C#.
 - RaceBits-typen mogen pas na het registreren van de handler gebruikt worden. Zet de code die ze gebruikt in een aparte methode met `[MethodImpl(NoInlining)]`.
@@ -63,33 +61,39 @@ pack.LoadFromFolder(parentDir, name);          // true bij succes; exception "Er
 var packs = new RaceBits.XPacks(parentDir);
 packs.Add(pack);
 pack.VerifyAndSetReferences(packs);            // false bij ontbrekende verwijzingen, maar laadt wel door
-pack.FillEmptyDefaultListsFromAllItems();      // alleen v2000
+pack.FillEmptyDefaultListsFromAllItems();      // v2.0 (bestaat niet in v1950)
 ```
 
 - `LoadFromFolder(XPackFolder, XPackname)`: het eerste argument is de **bovenliggende** map, het tweede de naam van de XPack-map.
 - De constructor met het zip-pad is nodig. `XPackFolder` wordt afgeleid uit `XPackFullZipFilePath` als `<map van de zip>\<naam>`. Met `new XPack()` geeft de getter van `XPackFolder` een `ArgumentException` ("Het pad heeft een ongeldige indeling").
-- `VerifyAndSetReferences` geeft alleen een bool. Voor de meldingen roep je de losse methoden aan: `VerifyMaterials(packs, errors)`, `VerifyObjectsAndSetReferences(errors)`, `VerifySObjectsAndSetObjects(errors)` en `VerifyCrossSections(errors)` (v1950; in v2000 met `packs` erbij). Voorbeeldmelding: `Error validating <xpack>, Objects\...\M_X - Materials\Objects\...\M_X not found.`
+- `VerifyAndSetReferences` geeft alleen een bool. Voor de meldingen roep je de losse methoden aan: `VerifyMaterials(packs, errors)`, `VerifyObjectsAndSetReferences(errors)`, `VerifySObjectsAndSetObjects(errors)` en `VerifyCrossSections(packs, errors)` (v1950: zonder `packs`). Voorbeeldmelding: `Error validating <xpack>, Objects\...\M_X - Materials\Objects\...\M_X not found.`
 - **MAX_PATH.** RaceBits draait op .NET Framework 4.8 en kan niet met paden van meer dan 260 tekens werken (`PathTooLongException`, verpakt in "Error loading …"). Het langste pad in je grootste XPack is 227 tekens: binnen de grens, maar met weinig marge. Een werkkopie in een diepe map gaat al mis.
 - Paden van items zijn `<XPack>\<Soort>\<pad>`, bijvoorbeeld `NewXPackTest\Objects\Billboards_L_1`. `XPack.GetPathWithPackNameRemoved` en `GetPathWithPackNameAndItemTypeRemoved` halen de voorvoegsels weg.
-- Bij het laden worden de textures niet naar de GPU gestuurd: de grootste XPack (1,2 GB, 399 textures) gebruikt maar ~100 MB werkgeheugen en ~124 MB private bytes. `Icon` is na het laden `null` voor objecten en materialen (`LoadIcons()` laadt ze apart).
+- Bij het laden worden de textures niet naar de GPU gestuurd: de grootste XPack (1,2 GB, 399 textures) gebruikt op v2.0 maar ~95 MB werkgeheugen en ~118 MB private bytes. `Icon` is na het laden `null` voor objecten en materialen (`LoadIcons()` laadt ze apart).
 - Defaults staan niet in de XML. Een object zonder `<Shadow>` leest als `Shadow=None`, `ShadowCast=Solid`, `Render=True`, `Purpose=Object`.
 
 ## Opslaan
 
+Round-trip zonder wijziging op **v2.0** (de doelversie):
+
 | Aanroep | Wat er gebeurt | Round-trip zonder wijziging |
 | --- | --- | --- |
-| `CreateObject(obj, false)` | Schrijft `<XPack>\Objects\<pad>.xml` opnieuw, inclusief de mesh-data | **Byte-identiek** (getest op 36 KB met mesh en 163 B leeg object) |
+| `CreateObject(obj, false)` | Schrijft `<XPack>\Objects\<pad>.xml` opnieuw, inclusief de mesh-data | Eerste keer: `<SeparationMinDistance>0</SeparationMinDistance>` (standaard) valt weg, de rest is gelijk, ook de mesh van 1,2 MB. Tweede keer: **byte-identiek** aan de eerste. Na opnieuw openen zijn alle eigenschappen gelijk. |
 | `CreateSObject(sobj, xpackName)` | Tweede argument is de **naam van de XPack** (bv. `"NewXPackTest"`) | Byte-identiek |
-| `CreateMaterialXML(mat)` | Schrijft `<XPack>\Materials\<pad>.xml` | **Niet identiek op v1950** bij XPacks van v2000: `rf_Specular`, `rf_Roughness`, `rf_NormalIntensity`, `rf_AlbedoTint` en `GrassFX_*` verdwijnen. Er komt `<AC_GameSurface>ROAD</AC_GameSurface>` bij als die ontbrak. |
-| `CreateMaterialIconFile(mat)` | Schrijft `<XPack>\Materials\<pad>.jpg` (128×128) | Byte-identiek; werkt headless |
-| `ZipTo(pad)` | Maakt de zip | Zelfde 42 bestanden en groottes als de export van XPacker. Verschil: v1950 schrijft `\` in de namen in de zip, de export (met v2000) heeft `/`. In fase 7 controleren of RTB beide leest. |
+| `CreateMaterialXML(mat)` | Schrijft `<XPack>\Materials\<pad>.xml` | Velden die ontbraken komen erbij met hun standaardwaarde (`GrassFX_Mask*`, en bij oudere materialen ook `rf_*` en `AC_GameSurface`). Er verdwijnt niets. |
+| `CreateMaterialIconFile(mat)` | Schrijft `<XPack>\Materials\<pad>.jpg` (128×128); werkt headless | Wordt opnieuw getekend: soms identiek, soms een paar bytes anders (4714 → 4713) |
+| `ZipTo(pad)` | Maakt de zip | Zelfde 42 bestanden en groottes als de export van XPacker. Verschil: `ZipTo` schrijft `\` in de namen in de zip, de export van XPacker van 23 aug heeft `/`. In fase 7 controleren of RTB beide leest. |
+
+Gevolg voor de tests (plan 2.4, `RoundTrip_NoChanges_FilesIdentical`): vergelijk semantisch (opnieuw openen en de eigenschappen vergelijken), en controleer daarnaast dat een tweede keer opslaan byte-identiek is. Een wijziging vergelijk je met een eenmaal genormaliseerde versie.
+
+Op v1950 was de object-round-trip wel byte-identiek, maar verloor `CreateMaterialXML` de velden `rf_*` en `GrassFX_*`.
 
 - Getallen schrijft RaceBits zelf. Het spike-proces draaide met `InvariantCulture`; `LODOut` 2001 kwam er als `2001` uit. Het gedrag onder `nl-NL` als `CurrentCulture` is nog niet getest. Daarom zet xpk bij het opstarten `InvariantCulture`.
 - Er schrijft niets naar stdout. Toch zet `xpk serve` als eerste `Console.Out` om naar stderr.
 
 ## FBX-import
 
-`ImportFBX(fbxPath, rootPath)` werkt headless:
+`ImportFBX(fbxPath, rootPath)` werkt headless, op v1950 en op v2.0 met hetzelfde resultaat:
 
 - Met `rootPath = ""` en `RunOff.fbx` kwamen er vier bestanden bij: `Objects\RunOff.xml`, `Materials\Objects\RunOff\M_TrackEdge_Opaque.xml` en `.jpg` (materiaalicoon), en `Textures\Objects\RunOff\T_TrackEdge_Opaque_BaseColor.dds` (gekopieerd van het absolute pad in de FBX). Daarna `CreateObject(obj, false)`.
 - De objectnaam is de bestandsnaam. `rootPath` wordt er als tekst **voor** gezet: met `"Imported"` werd het `ImportedBench`.
@@ -121,7 +125,7 @@ pack.FillEmptyDefaultListsFromAllItems();      // alleen v2000
 | --- | --- | --- |
 | XPacker opent bron-XPacks (mappen) uit | `C:\Users\Moor\OneDrive\Documenten\Race Track Builder XPacker` | Instelling `XPacksFolder` in `%LOCALAPPDATA%\RaceTrackBuilder\XPacker.exe_Url_*\1.0.0.0\user.config` |
 | XPacker kent de RTB-map | `C:\Users\Moor\OneDrive\Documenten\Race Track Builder` | Instelling `RaceTrackBuilderFolder` in dezelfde user.config |
-| RTB leest de zips uit | `C:\Users\Moor\OneDrive\Documenten\Race Track Builder\XPacks` | `Globals.UserXPacksFolder` (v1950), `XPacksCache.xml` in de RTB-map |
+| RTB leest de zips uit | `C:\Users\Moor\OneDrive\Documenten\Race Track Builder\XPacks` | `<projectsFolder>\XPacks`, `XPacksCache.xml` in de RTB-map (v1950: `Globals.UserXPacksFolder`) |
 | Meegeleverde themes | `<RTB>\Themes\*.zip` | `XPacksCache.xml` |
 
 Het doel van `ZipTo` is dus `<Documenten>\Race Track Builder\XPacks\<naam>.zip`. Het zip-pad dat je aan de constructor van `XPack` geeft (`<map>\<naam>.zip`) bepaalt alleen `XPackFolder`; `ZipTo` schrijft naar het pad dat je meegeeft.
@@ -130,9 +134,9 @@ Het doel van `ZipTo` is dus `<Documenten>\Race Track Builder\XPacks\<naam>.zip`.
 
 - **TD by CT - Track Environment 2 - Buildings:** de objecten `Infrastructure\Grandstand_End`, `Grandstand_Mid` en `Grandstand_Start` verwijzen samen naar 15 materialen in `Materials\Objects\Infrastructure\SM_Grandstand_*`. Die mappen zijn leeg, en de drie objecten hebben ook geen icoon. Dit is een goed eerste testgeval voor de validatieregels in fase 4.
 
-## Acceptatie door jou (fase 0)
+## Acceptatie fase 0
 
-1. Wijs XPacker tijdelijk naar `C:\Users\Moor\xpk` als XPacks-map, of kopieer `C:\Users\Moor\xpk\NewXPackTest` naar een **nieuwe** naam in je XPacker-map. Daar staat al een `NewXPackTest`, dat is het origineel.
-2. Open NewXPackTest en controleer bij het object **Billboards_L_1** dat LOD Out **2001** is. De andere objecten moeten ongewijzigd zijn: Balloon_Arch 2000, Barrier Pack 1000, New Empty Object 2000.
-3. Kies de RTB-branch voor dit project (v1950 of v2000).
-4. Terugzetten kan met `C:\Users\Moor\AppData\Local\xpk\backups\NewXPackTest\20261025-204909\` (volledige kopie van vóór alle experimenten).
+- [x] XPacker toont bij **Billboards_L_1** LOD Out **2001**; de andere objecten zijn ongewijzigd (Jeroen, 25 okt 2026).
+- [x] RTB-branch gekozen: **v2.0** (Steam-branch `v2000`). Over v2.1 wordt later besloten.
+
+De volledige kopie van vóór alle experimenten staat in `C:\Users\Moor\AppData\Local\xpk\backups\NewXPackTest\20261025-204909\`.

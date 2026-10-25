@@ -53,7 +53,7 @@ Waarden die gelijk zijn aan de standaard worden niet geschreven. In een XPack va
 | `Purpose` | | enum `Purposes` (flags: Terrain 1, Track 2, Wall 4, Object 8) |
 | `UseRBRCollisionColumn`, `RBRCollisionColumn` | | |
 | `LODIn`, `LODOut` | `0`, `2000` | altijd aanwezig |
-| `SeparationGroup`, `SeparationMinDistance` | `Sign/Posts`, `0` | |
+| `SeparationGroup`, `SeparationMinDistance` | `Sign/Posts`, `0` | v2.0 laat `SeparationMinDistance` weg als die 0 is |
 | `PolyLists` / `PolyList` | | zie mesh-data |
 | `CutPolys` | | altijd aanwezig (meestal leeg) |
 
@@ -103,11 +103,11 @@ De mesh staat **in de object-XML zelf**, per materiaal één `PolyList`:
 
 ## Materiaal (`<material>`)
 
-Alle velden worden geschreven, ook als ze de standaardwaarde hebben. Volgorde in een v2000-bestand:
+Alle velden worden geschreven, ook als ze de standaardwaarde hebben. Volgorde in een v2.0-bestand:
 
 `ShaderType`, `DefaultApplicationType`, `PerMeterCoverage`, `GameSurface`, `Purpose`, `rF_SpecularPower`, `rF_SpecularColor R G B`, `rF_rFactorMaterialName`, `rf_Specular`\*, `rf_Roughness`\*, `rf_NormalIntensity`\*, `rf_AlbedoTint R G B`\*, `rF_TransparencyType`, `rF_TransparencyChromaColor R G B`, `AC_GameSurface` (v1950 schrijft hem altijd), `AC_Ambient`, `AC_Diffuse`, `AC_Specular`, `AC_SpecularPower`, `AC_AlphaRef`, `AC_DetailUVMultiplier`, `AC_DetailNormalBlend`, `AC_MultR/G/B/A`, `AC_MagicMult`, `AC_TransparencyType`, `AC_ksTree`, `GrassFX_Size`\*, `GrassFX_Width`\*, `GrassFX_Cut`\*, `GrassFX_Mask*`\*, daarna de texture-maps.
 
-\* bestaat alleen in v2000. Met v1950 gaan deze velden bij `CreateMaterialXML` verloren.
+\* bestaat alleen in v2.0. Met v1950 gaan deze velden bij `CreateMaterialXML` verloren. v2.0 schrijft bij opslaan altijd de volledige lijst, dus ook `AC_GameSurface` en alle `GrassFX_Mask*`-velden (`GrassFX_MaskThreshold`, `GrassFX_MaskRedThreshold`, `GrassFX_MaskMinLuminance`, `GrassFX_MaskMaxLuminance`), ook als die in het oude bestand ontbraken.
 
 Een texture-map (`DiffMap`, `BumpMap`, …; in RaceBits `TexMap1..n`):
 
@@ -139,7 +139,7 @@ Een texture-map (`DiffMap`, `BumpMap`, …; in RaceBits `TexMap1..n`):
 ## Zip
 
 - Dezelfde bestanden als de bronmap, met paden relatief aan de XPack-map (`Objects\Barrier Pack.xml`).
-- De export van XPacker (gemaakt met v2000) gebruikt `/` als scheidingsteken, `ZipTo` met v1950 gebruikt `\`. Namen en groottes zijn verder identiek (42 bestanden, 37 135 166 bytes).
+- De export van XPacker van 23 aug gebruikt `/` als scheidingsteken, `ZipTo` (v1950 en v2.0) gebruikt `\`. Namen en groottes zijn verder identiek (42 bestanden, 37 135 166 bytes).
 
 ## Grenzen
 

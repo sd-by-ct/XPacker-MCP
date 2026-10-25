@@ -55,17 +55,35 @@ namespace Xpk.Tests.Integration
             Assert.Equal(1, spike.Summary.CrossSections);
         }
 
+        // RaceBits v2.0 normalizes on the first save (it omits defaults such as SeparationMinDistance=0),
+        // so a no-change save is checked semantically and for idempotence, not byte for byte against the source.
+
         [Fact]
-        public void SaveObject_NoChange_AllFilesByteIdentical()
+        public void SaveObject_NoChange_OnlyObjectFileTouched_ValuesUnchanged()
         {
             var env = RtbEnvironment.Initialize(XpkConfig.Default());
-            string folder = FreshCopy(nameof(SaveObject_NoChange_AllFilesByteIdentical));
+            string folder = FreshCopy(nameof(SaveObject_NoChange_OnlyObjectFileTouched_ValuesUnchanged));
             var before = Hashes(folder);
+            var valuesBefore = SpikeRunner.Open(env, folder).ObjectValues(ObjectName);
 
-            var spike = SpikeRunner.Open(env, folder);
-            spike.SaveObject(ObjectName, lodOutDelta: 0);
+            SpikeRunner.Open(env, folder).SaveObject(ObjectName, lodOutDelta: 0);
 
-            Assert.Equal(before, Hashes(folder));
+            var changedFiles = before.Except(Hashes(folder)).Select(h => h.Split('|')[0]).ToArray();
+            Assert.All(changedFiles, f => Assert.Equal(@"\Objects\" + ObjectName + ".xml", f));
+            Assert.Equal(valuesBefore, SpikeRunner.Open(env, folder).ObjectValues(ObjectName));
+        }
+
+        [Fact]
+        public void SaveObject_NoChange_SecondSaveByteIdentical()
+        {
+            var env = RtbEnvironment.Initialize(XpkConfig.Default());
+            string folder = FreshCopy(nameof(SaveObject_NoChange_SecondSaveByteIdentical));
+            SpikeRunner.Open(env, folder).SaveObject(ObjectName, lodOutDelta: 0);
+            var afterFirst = Hashes(folder);
+
+            SpikeRunner.Open(env, folder).SaveObject(ObjectName, lodOutDelta: 0);
+
+            Assert.Equal(afterFirst, Hashes(folder));
         }
 
         [Fact]
@@ -74,6 +92,7 @@ namespace Xpk.Tests.Integration
             var env = RtbEnvironment.Initialize(XpkConfig.Default());
             string folder = FreshCopy(nameof(SaveObject_LodOutPlusOne_OnlyThatLineChanges));
             string xml = Path.Combine(folder, "Objects", ObjectName + ".xml");
+            SpikeRunner.Open(env, folder).SaveObject(ObjectName, lodOutDelta: 0);   // normalize first
             var before = Hashes(folder);
             var linesBefore = File.ReadAllLines(xml);
 
