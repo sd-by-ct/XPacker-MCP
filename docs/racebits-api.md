@@ -85,6 +85,16 @@ Experiment op kopieën van Default-testpack (26 okt 2026, v2.0):
 - Fouten bij het laden geven dus een exception, geen dialoog. De dialoog uit fase 0 kwam van `ImportFBX`. Toch draait xpk elke RaceBits-aanroep via `RaceBitsCall`: op een eigen STA-thread met een time-out (60 s). Een dialoog (`#32770`) op die thread wordt gelezen, gesloten met WM_CLOSE, en gemeld als `RACEBITS_DIALOG`. Het laden op een andere thread dan die van `Globals.Initialize` werkt zonder problemen.
 - Default-testpack via RaceBits: 28 objecten, 4 String Objects, 28 materialen, 67 textures, 13 Cross Sections (de map heeft meer bestanden: iconen `.jpg`, `Thumbs.db` en `.rbr`).
 
+### Paden en verwijzingen in het geheugen (fase 1.5)
+
+- `BObject.Path`, `SObject.Path`, `Mat.Path` en `Texture.XPackPath` zijn volledig: `<XPack>\<Soort>\<pad>` (textures met extensie).
+- `TextureMap.Path` is ook volledig (`Default-testpack\Textures\Objects\Vegetation\Trees\Tree01.dds`), en leeg (`""`) voor een ongebruikt slot. `TextureMap.Texture` is na het laden `null` (textures worden pas bij weergave geladen).
+- `BObjectPolyList.MaterialPath` is relatief aan `Materials\` (zoals in de XML); `.Material` is na `VerifyAndSetReferences` gezet.
+- `BObjectHierarcyTemplate.BObjectPath` is na het laden volledig (in de XML staat het relatief).
+- Een String Object verwijst naar objecten via `Start/Pattern/End.Pieces[i].BObject`; `SObject.Materials` was leeg in de fixture.
+- `Mat.GetRequiredTextureMaps()` geeft paren (`"Diffuse"`, TextureMap). Het materiaal-Purpose is geen veld: `PurposeContains(Purposes)`.
+- `XPack.Textures` bevat alleen beeldbestanden: de `.rbr`-bestanden in `Textures\` en `Thumbs.db` tellen niet mee.
+
 ## Opslaan
 
 Round-trip zonder wijziging op **v2.0** (de doelversie):
