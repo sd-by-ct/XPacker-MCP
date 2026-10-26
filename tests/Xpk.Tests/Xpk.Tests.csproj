@@ -14,4 +14,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xpk.Core\Xpk.Core.csproj" />
   </ItemGroup>
+
+  <!-- Integration tests inspect RaceBits objects directly; resolved at runtime by RtbEnvironment, never copied. -->
+  <ItemGroup>
+    <Reference Include="RaceBits">
+      <HintPath>$(RtbDir)RaceBits.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 </Project>

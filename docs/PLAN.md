@@ -320,6 +320,19 @@ static class Query {
   - `Textures_KerbVariants_DifferentMd5`
 - [ ] **1.6 CLI.** De commando's `list`, `get` en `info`, met `--json`. Tekstuitvoer als tabel; alle getallen zonder cultuur. Test `Cli_ListJson_IsValidJson`.
 
+**Afwijkingen en besluiten in fase 1** (26 okt 2026)
+
+- **Fixture.** `tests/Fixtures/source/Default-testpack`: de standaard-BTB-XPack (auteur Brendon Pywell), geen eigen werk. Hij staat daarom **niet** in git (`.gitignore`); `tests/Fixtures/README.md` beschrijft hoe je hem neerzet. Aantallen via RaceBits: 28 objecten, 4 String Objects, 28 materialen, 67 textures, 13 Cross Sections, in plaats van de 3/3/1 uit het plan. Child objects: `Vegetation\Large Trees\Tree04_complex`. De "kerb-varianten" (zelfde naam, andere inhoud) zijn `Textures\Ripple001.dds` en `Textures\Ripple\ripple001.dds`.
+- **AcRelevant op naam, bij twijfel true** (besluit Jeroen). Er is geen simulatortabel beschikbaar; de naam van een veld zegt voor welke simulator het is.
+  - Materiaal: `rF_*` en `rf_*` = false (rFactor 2). `AC_*`, `GrassFX_*` (CSP Grass FX), ShaderType, DefaultApplicationType, PerMeterCoverage, GameSurface, Purpose, TexMap1–9 en `Perlin*` = true.
+  - Object: UseCollisionColumn/CollisionColumn (XML: `UseRBRCollisionColumn`/`RBRCollisionColumn`, Richard Burns Rally) = false, de rest true.
+  - String Object: rFactorVisGroup = false, de rest true.
+  - De regel staat ook als commentaar in `PropertyMap.cs`.
+- **Niet in de whitelist (geen scalair type):** `Object.CollisionColumn` (Vector3), `SObject.rFactorVisGroup` (een klasse), de kleuren en `TexMap1–9` van materialen, en het materiaal-Purpose. Dat laatste is geen veld op `Mat`; RaceBits biedt `PurposeContains(Purposes)` en `SetPurpose(Purposes, bool)`, dus een set vlaggen. Deze velden zijn alleen te lezen (`get`).
+- **Fouten:** `XpkException(code, message)`. Nieuwe codes naast die uit het plan: `XPACK_NOT_FOUND`, `NOT_FOUND`, `PATH_TOO_LONG`, `FILE_NOT_LOCAL`, `LOAD_FAILED`, `RACEBITS_TIMEOUT`, `RACEBITS_DIALOG`, `CONFIG_INVALID`, `INVALID_ARGUMENTS`.
+- **RaceBits-bewaking:** `RaceBitsCall` voert RaceBits-aanroepen uit op een eigen STA-thread met een time-out en sluit dialogen (zie racebits-api.md, "Fouten bij het openen").
+- **Getallen invoeren:** `0.6` en `0,6` zijn allebei 0.6. Meer dan één scheidingsteken wordt geweigerd (`1.000,5`, `1,000.5`, `1.000.000`). Enums alleen bij naam.
+
 **Verificatie**
 
 - `dotnet test --filter Category!=Integration`: alles groen
