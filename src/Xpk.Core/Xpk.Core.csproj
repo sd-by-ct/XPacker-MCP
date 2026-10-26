@@ -4,6 +4,11 @@
     <RootNamespace>Xpk.Core</RootNamespace>
   </PropertyGroup>
 
+  <!-- Same version the ModelContextProtocol SDK brings in (docs/PLAN.md, fase 1). -->
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="10.0.13" />
+  </ItemGroup>
+
   <!-- RTB assemblies: referenced from the RTB folder, never copied (Private=false). Loaded at runtime by RtbEnvironment. -->
   <ItemGroup>
     <Reference Include="RaceBits">
