@@ -72,6 +72,19 @@ pack.FillEmptyDefaultListsFromAllItems();      // v2.0 (bestaat niet in v1950)
 - Bij het laden worden de textures niet naar de GPU gestuurd: de grootste XPack (1,2 GB, 399 textures) gebruikt op v2.0 maar ~95 MB werkgeheugen en ~118 MB private bytes. `Icon` is na het laden `null` voor objecten en materialen (`LoadIcons()` laadt ze apart).
 - Defaults staan niet in de XML. Een object zonder `<Shadow>` leest als `Shadow=None`, `ShadowCast=Solid`, `Render=True`, `Purpose=Object`.
 
+### Fouten bij het openen (fase 1.2)
+
+Experiment op kopieën van Default-testpack (26 okt 2026, v2.0):
+
+| Situatie | Gedrag van RaceBits | xpk |
+| --- | --- | --- |
+| Object-XML afgebroken (`<Object><LODOut>abc`) | `LoadFromFolder` gooit `Exception("Error loading Default-testpack\Objects\...\Tree01")` met de XmlException-tekst erin. Geen MessageBox. | `LOAD_FAILED` met het itempad |
+| Materiaal-XML afgebroken | Idem: "Error loading ...\Materials\Road\Cobble\Cobble001". Geen MessageBox. | `LOAD_FAILED` |
+| Materiaal-XML verwijderd dat door objecten gebruikt wordt | Laden lukt; `VerifyAndSetReferences` geeft `false`; de losse Verify-aanroepen geven de meldingen | waarschuwing in de samenvatting |
+
+- Fouten bij het laden geven dus een exception, geen dialoog. De dialoog uit fase 0 kwam van `ImportFBX`. Toch draait xpk elke RaceBits-aanroep via `RaceBitsCall`: op een eigen STA-thread met een time-out (60 s). Een dialoog (`#32770`) op die thread wordt gelezen, gesloten met WM_CLOSE, en gemeld als `RACEBITS_DIALOG`. Het laden op een andere thread dan die van `Globals.Initialize` werkt zonder problemen.
+- Default-testpack via RaceBits: 28 objecten, 4 String Objects, 28 materialen, 67 textures, 13 Cross Sections (de map heeft meer bestanden: iconen `.jpg`, `Thumbs.db` en `.rbr`).
+
 ## Opslaan
 
 Round-trip zonder wijziging op **v2.0** (de doelversie):

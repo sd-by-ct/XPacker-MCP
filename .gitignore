@@ -17,3 +17,10 @@ FbxWrapper.dll
 RTBPlugins.dll
 SharpDX*.dll
 libfbxsdk.dll
+
+# Test-XPack (Default-testpack, standaard-BTB-XPack): alleen lokaal, zie tests/Fixtures/README.md
+tests/Fixtures/source/
+
+# Door Verkenner aangemaakt
+Thumbs.db
+desktop.ini
