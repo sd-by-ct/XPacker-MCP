@@ -292,33 +292,33 @@ static class Query {
 
 **Taken (test-first, één commit per taak)**
 
-- [ ] **1.1 Config en VersionGuard.** Tests:
+- [x] **1.1 Config en VersionGuard.** Tests:
   - `UnknownHash_IsReadOnly`
   - `KnownHash_IsWritable`
   - `AllowUnknown_IsWritable_WithWarning`
-- [ ] **1.2 XPackSession.** Integratietests op de fixture:
+- [x] **1.2 XPackSession.** Integratietests op de fixture:
   - `Open_Fixture_CountsMatch`: 3 objecten, 3 materialen, 1 String Object
   - `ChangedOnDisk_AfterTouch_IsTrue`
   - `Reload_ResetsSnapshot`
   - `Open_PathWithSpacesAndAccents`
-- [ ] **1.3 PropertyMap.** De whitelist komt uit fase 0. `AcRelevant` volgt de simulatortabel uit de handleiding. Tests:
+- [x] **1.3 PropertyMap.** De whitelist komt uit fase 0. `AcRelevant` volgt de simulatortabel uit de handleiding. Tests:
   - `Object_HasCoreFields`: Render, Shadow, ShadowCast, LODIn, LODOut, Purpose, Collisions, Driveable
   - `ParseValue_DecimalPoint_UnderDutchCulture`: met `CurrentCulture = nl-NL` wordt `"0.6"` 0.6f
   - `ParseValue_Comma_Accepted`: `"0,6"` wordt 0.6f
   - `ParseValue_Ambiguous_Rejected`: `"1.000,5"` geeft `INVALID_VALUE`
   - `ParseValue_EnumByName_CaseInsensitive`
-- [ ] **1.4 Selector.** Unittests:
+- [x] **1.4 Selector.** Unittests:
   - `Folder_DoesNotMatchSiblingWithSamePrefix`: `Bomen` matcht niet `Bomen2\X`
   - `Star_MatchesOneLevel`
   - `DoubleStar_MatchesDeep`
   - `Slash_And_Backslash_Equivalent`
   - `Regex_Prefix`
   - `CaseInsensitive`
-- [ ] **1.5 Query en snapshots.** `TextureInfo` leest breedte en hoogte uit de bestandsheader, voor DDS (128 bytes) en PNG, zonder D3D. Daarbij komen MD5 en `UsedBy[]`. Tests:
+- [x] **1.5 Query en snapshots.** `TextureInfo` leest breedte en hoogte uit de bestandsheader, voor DDS (128 bytes) en PNG, zonder D3D. Daarbij komen MD5 en `UsedBy[]`. Tests:
   - `ListObjects_WithSelector_ReturnsOnlyMatches`
   - `GetMaterial_HasTexMapsAndUsageCount`
   - `Textures_KerbVariants_DifferentMd5`
-- [ ] **1.6 CLI.** De commando's `list`, `get` en `info`, met `--json`. Tekstuitvoer als tabel; alle getallen zonder cultuur. Test `Cli_ListJson_IsValidJson`.
+- [x] **1.6 CLI.** De commando's `list`, `get` en `info`, met `--json`. Tekstuitvoer als tabel; alle getallen zonder cultuur. Test `Cli_ListJson_IsValidJson`.
 
 **Afwijkingen en besluiten in fase 1** (26 okt 2026)
 
@@ -332,6 +332,11 @@ static class Query {
 - **Fouten:** `XpkException(code, message)`. Nieuwe codes naast die uit het plan: `XPACK_NOT_FOUND`, `NOT_FOUND`, `PATH_TOO_LONG`, `FILE_NOT_LOCAL`, `LOAD_FAILED`, `RACEBITS_TIMEOUT`, `RACEBITS_DIALOG`, `CONFIG_INVALID`, `INVALID_ARGUMENTS`.
 - **RaceBits-bewaking:** `RaceBitsCall` voert RaceBits-aanroepen uit op een eigen STA-thread met een time-out en sluit dialogen (zie racebits-api.md, "Fouten bij het openen").
 - **Getallen invoeren:** `0.6` en `0,6` zijn allebei 0.6. Meer dan één scheidingsteken wordt geweigerd (`1.000,5`, `1,000.5`, `1.000.000`). Enums alleen bij naam.
+- **Selector:** `**` betekent nul of meer niveaus, dus `Kerbs\**` selecteert ook een item dat zelf `Kerbs` heet. `re:` is niet verankerd: anker zelf met `^…$`.
+- **Query:** de klasse heet `Query` in namespace `Xpk.Core.Queries`. `List` geeft een `ItemPage { Items, Total, Offset, NextOffset }` terug in plaats van een kale lijst, omdat lijsten `total` en `next_offset` nodig hebben. Een selector zonder treffer geeft bij lezen een lege pagina; `NO_MATCH` is voor schrijfacties (fase 2). MD5 en header worden alleen berekend voor de items op de opgevraagde pagina.
+- **TextureHeader** leest naast DDS en PNG ook JPEG (SOF-marker), omdat XPacks ook `.jpg`-textures hebben.
+- **CLI:** naast `list`, `get` en `info` ook `list xpacks` (de Core-functie voor `xpack_list`). JSON gebruikt snake_case (`next_offset`, `race_bits_sha256`); veldnamen in `fields` blijven zoals in RaceBits (`LODOut`). De tijdelijke `xpk spike` en de spike-tests zijn weg; de round-trip-tests komen terug in 2.4.
+- **MCP-test uit fase 0** haperde onder belasting (protocolversie-probe van de SDK-client). De test zet nu `ProtocolVersion = "2025-11-25"`; zie racebits-api.md, "MCP SDK op net48".
 
 **Verificatie**
 

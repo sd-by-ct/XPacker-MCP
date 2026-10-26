@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Xpk.Cli.Commands;
 
@@ -21,19 +22,12 @@ namespace Xpk.Cli
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 
-            string[] rest = args.Skip(1).ToArray();
             try
             {
-                switch (command)
-                {
-                    case "serve":
-                        return ServeCommand.Run();
-                    case "spike":
-                        return SpikeCommand.Run(rest);
-                    default:
-                        Console.Error.WriteLine("Gebruik: xpk serve | xpk spike <xpack-map> [--object <naam>] [--lodout-plus-one] [--apply]");
-                        return 2;
-                }
+                if (command == "serve") return ServeCommand.Run();
+
+                Console.OutputEncoding = new UTF8Encoding(false);
+                return CliApp.Run(command, args.Skip(1).ToArray(), Console.Out, Console.Error);
             }
             catch (Exception ex)
             {
