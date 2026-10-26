@@ -31,4 +31,4 @@ CLI + MCP-server (`xpk serve`). Plan: docs/PLAN.md. Bevindingen: docs/racebits-a
 - dotnet build
 - dotnet test --filter Category!=Integration
 - dotnet test
-- out\xpk.exe list objects --xpack C:\dev\xpk-work\<XPack> --json
+- out\xpk.exe list objects --xpack C:\Users\Moor\xpk\<XPack> --json
