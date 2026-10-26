@@ -15,13 +15,19 @@ namespace Xpk.Tests.Integration
         private static string XpkExe =>
             Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\..\..\out\xpk.exe"));
 
+        // Unpinned, the SDK client first probes with server/discover (2026-07-28) and falls back to initialize when the
+        // probe times out (5 s). On a busy machine the server answers the probe late, has already switched to
+        // 2026-07-28 and then refuses initialize ("Method 'initialize' is not available"). Pinning an
+        // initialize-capable version skips the probe: a plain initialize handshake.
         private static Task<McpClient> StartServer() =>
-            McpClient.CreateAsync(new StdioClientTransport(new StdioClientTransportOptions
-            {
-                Name = "xpk",
-                Command = XpkExe,
-                Arguments = new[] { "serve" },
-            }));
+            McpClient.CreateAsync(
+                new StdioClientTransport(new StdioClientTransportOptions
+                {
+                    Name = "xpk",
+                    Command = XpkExe,
+                    Arguments = new[] { "serve" },
+                }),
+                new McpClientOptions { ProtocolVersion = "2025-11-25" });
 
         [Fact]
         public async Task Serve_ToolsList_ContainsHello()

@@ -140,6 +140,8 @@ Op v1950 was de object-round-trip wel byte-identiek, maar verloor `CreateMateria
 - De tools komen van `McpServerTool.Create(MethodInfo)` met `[McpServerTool]` en `[Description]`.
 - Getest met de SDK-client (xUnit) en met de hand met JSON-RPC: `initialize`, `tools/list` en `tools/call` geven geldige antwoorden, en op stdout staat alleen JSON.
 - Na het sluiten van stdin stopt de server in 44 ms (Claude Code geeft 300 ms).
+- **Haperende test (gevonden in fase 1).** De SDK-client 2.3.0 probeert zonder vaste `ProtocolVersion` eerst `server/discover` (protocol 2026-07-28) met een time-out van 5 s, en valt daarna terug op `initialize`. Op een drukke pc (volledige testrun naast andere zware programma's) antwoordt de server te laat op de probe. Hij staat dan al op 2026-07-28 en weigert `initialize` ("Method 'initialize' is not available on protocol version '2026-07-28'"). Ongeveer de helft van de volledige testrondes faalde zo. De tests zetten daarom `ProtocolVersion = "2025-11-25"`: geen probe, gewoon `initialize`. Voor fase 3.6 (end-to-end) geldt hetzelfde.
+- Let op: `dotnet build tests/Xpk.Tests` (alleen het project) bouwt AnyCPU naar `bin\Debug`, maar `dotnet test` op de solution draait x64 uit `bin\x64\Debug`. Gebruik dus altijd `dotnet build` op de solution vóór `dotnet test --no-build`.
 - Let op: als Claude Code `out\xpk.exe serve` draait, staat het bestand vast en faalt `dotnet build`. Registreer de server dus niet in een sessie waarin je aan xpk zelf bouwt, of bouw naar een andere map.
 
 ## Waar staan de XPacks? (0.4)
